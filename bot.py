@@ -102,8 +102,8 @@ async def imagine(_: Client, message: Message):
         # Call DeepAI API to generate the image
         response = requests.post(
             "https://api.deepai.org/api/text2img",
-            data={"text": text_to_imagine},
-            headers={"api-key": DEEPAI_API_KEY}
+            headers={"api-key": DEEPAI_API_KEY},
+            files={"text": text_to_imagine}
         )
         response.raise_for_status()
         api_response = response.json()
