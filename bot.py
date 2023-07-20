@@ -95,19 +95,24 @@ async def imagine(_: Client, message: Message):
     text_to_imagine = message.text.split(maxsplit=1)[1]
     url = f"https://api.safone.me/imagine?text={text_to_imagine}"
 
-    async with httpx.AsyncClient(timeout=20) as client:
+    headers = {"Content-Type": "application/json"}  # Set "Content-Type" header to "application/json"
+
+    async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url)
+            response = await client.get(url, headers=headers)  # Pass the headers with the request
             response.raise_for_status()
             image_bytes = response.content
 
             # Send the image as a photo
-            await app.send_photo(chat_id=message.chat.id, photo=BytesIO(image_bytes), caption=text_to_imagine)
+            bio = BytesIO(image_bytes)
+            bio.name = "image.jpg"
+            await app.send_photo(chat_id=message.chat.id, photo=bio, caption=text_to_imagine)
 
             await txt.delete()
         except httpx.HTTPError as e:
             await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
-
+            
 app.run()
+print("bot start...")
