@@ -3,11 +3,31 @@ from pyrogram import filters, Client
 from pyrogram.types import Message
 
 # Replace these with your actual values
-API_ID =  19099900
+API_ID = 19099900
 API_HASH = "2b445de78e5baf012a0793e60bd4fbf5"
 BOT_TOKEN = "6377102011:AAHJJ7AUKZhQKcAnHPQtjg9put5mG8vSjEc"
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
+# Dictionary to store the conversation history for each user
+conversation_history = {}
+
+# Help menu text
+help_text = (
+    "**Usage Guide**\n"
+    "1. Send /start to begin the chatbot.\n"
+    "2. Send /help to display this help menu.\n"
+    "3. Send /stop to stop the current conversation.\n"
+    "4. Use /chat followed by your message to chat with the AI chatbot.\n"
+)
+
+@app.on_message(filters.command("start"))
+async def start_command(_: Client, message: Message):
+    await message.reply("Welcome to MyBot! I am an AI-powered chatbot. Send /help for more information.")
+
+@app.on_message(filters.command("help"))
+async def help_command(_: Client, message: Message):
+    await message.reply(help_text)
 
 @app.on_message(filters.command("chat"))
 async def gpt(_: Client, message: Message):
@@ -17,11 +37,19 @@ async def gpt(_: Client, message: Message):
         return await txt.edit("**Please provide a message too.**")
 
     query = message.text.split(maxsplit=1)[1]
+
+    # Retrieve conversation history for this user
+    chat_id = message.from_user.id
+    if chat_id in conversation_history:
+        dialog_messages = conversation_history[chat_id]
+    else:
+        dialog_messages = []
+
     url = "https://api.safone.me/chatgpt"
     payload = {
         "message": query,
         "chat_mode": "assistant",
-        "dialog_messages": '[{"bot":"","user":""}]',
+        "dialog_messages": dialog_messages,
     }
 
     async with httpx.AsyncClient(timeout=20) as client:
@@ -34,12 +62,25 @@ async def gpt(_: Client, message: Message):
 
             # Check if the API response contains the 'message' key
             if "message" in results:
-                await txt.edit(results["message"])
+                bot_response = results["message"]
+
+                # Update conversation history with the latest message
+                dialog_messages.append({"bot": bot_response, "user": query})
+                conversation_history[chat_id] = dialog_messages
+
+                await txt.edit(bot_response)
             else:
                 await txt.edit("**An error occurred. No response received from the API.**")
         except httpx.HTTPError as e:
             await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
+
+@app.on_message(filters.command("stop"))
+async def stop_command(_: Client, message: Message):
+    chat_id = message.from_user.id
+    if chat_id in conversation_history:
+        del conversation_history[chat_id]
+    await message.reply("Conversation stopped. Send /start to begin a new chat.")
 
 app.run()
