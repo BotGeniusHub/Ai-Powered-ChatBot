@@ -87,7 +87,7 @@ async def stop_command(_: Client, message: Message):
     await message.reply("Conversation stopped. Send /start to begin a new chat.")
 
 # Replace this with your actual API key
-DEEPAI_API_KEY = "YOUR_DEEPAI_API_KEY"
+DEEPAI_API_KEY = "f12e85a7-0bd7-4641-bc6c-574623677cf7"
 
 @app.on_message(filters.command("imagine"))
 async def imagine(_: Client, message: Message):
