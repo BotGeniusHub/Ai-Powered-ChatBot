@@ -1,6 +1,7 @@
 import httpx
 from pyrogram import filters, Client
 from pyrogram.types import Message
+from io import BytesIO
 
 # Replace these with your actual values
 API_ID = 19099900
@@ -98,13 +99,12 @@ async def imagine(_: Client, message: Message):
         try:
             response = await client.get(url)
             response.raise_for_status()
-            image_url = response.json().get("image")
+            image_bytes = response.content
 
-            if image_url:
-                await app.send_photo(chat_id=message.chat.id, photo=image_url)
-                await txt.delete()
-            else:
-                await txt.edit("**Failed to generate image. Please try again.**")
+            # Send the image as a photo
+            await app.send_photo(chat_id=message.chat.id, photo=BytesIO(image_bytes))
+
+            await txt.delete()
         except httpx.HTTPError as e:
             await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
