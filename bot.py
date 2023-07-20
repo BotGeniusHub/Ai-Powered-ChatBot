@@ -102,7 +102,7 @@ async def imagine(_: Client, message: Message):
             image_bytes = response.content
 
             # Send the image as a photo
-            await app.send_photo(chat_id=message.chat.id, photo=BytesIO(image_bytes))
+            await app.send_photo(chat_id=message.chat.id, photo=BytesIO(image_bytes), caption=text_to_imagine)
 
             await txt.delete()
         except httpx.HTTPError as e:
