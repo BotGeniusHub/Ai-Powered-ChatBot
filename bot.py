@@ -19,6 +19,7 @@ help_text = (
     "2. Send /help to display this help menu.\n"
     "3. Send /stop to stop the current conversation.\n"
     "4. Use /chat followed by your message to chat with the AI chatbot.\n"
+    "5. Use /imagine followed by your text to generate an image based on the text.\n"
 )
 
 @app.on_message(filters.command("start"))
@@ -82,5 +83,31 @@ async def stop_command(_: Client, message: Message):
     if chat_id in conversation_history:
         del conversation_history[chat_id]
     await message.reply("Conversation stopped. Send /start to begin a new chat.")
+
+@app.on_message(filters.command("imagine"))
+async def imagine(_: Client, message: Message):
+    txt = await message.reply("**Generating image...**")
+
+    if len(message.command) < 2:
+        return await txt.edit("**Please provide a text to generate the image.**")
+
+    text_to_imagine = message.text.split(maxsplit=1)[1]
+    url = f"https://api.safone.me/imagine?text={text_to_imagine}"
+
+    async with httpx.AsyncClient(timeout=20) as client:
+        try:
+            response = await client.get(url)
+            response.raise_for_status()
+            image_url = response.json().get("image")
+
+            if image_url:
+                await app.send_photo(chat_id=message.chat.id, photo=image_url)
+                await txt.delete()
+            else:
+                await txt.edit("**Failed to generate image. Please try again.**")
+        except httpx.HTTPError as e:
+            await txt.edit(f"**An HTTP error occurred: {str(e)}**")
+        except Exception as e:
+            await txt.edit(f"**An error occurred: {str(e)}**")
 
 app.run()
