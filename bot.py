@@ -1,5 +1,5 @@
 import httpx
-import requests as r
+import requests
 from pyrogram import filters, Client
 from pyrogram.types import Message
 from io import BytesIO
