@@ -1,3 +1,4 @@
+import os
 import httpx
 from pymongo import MongoClient
 import logging
@@ -185,6 +186,35 @@ async def process_dm(client: Client, message: Message):
             await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
+
+DEEPAI_API_KEY = 'f12e85a7-0bd7-4641-bc6c-574623677cf7'
+DEEPAI_API_ENDPOINT = 'https://api.deepai.org/api/text2img'
+
+def generate_image_from_text(text):
+    headers = {
+        'api-key': DEEPAI_API_KEY
+    }
+
+    payload = {
+        'text': text
+    }
+
+    response = requests.post(DEEPAI_API_ENDPOINT, data=payload, headers=headers)
+    data = response.json()
+
+    if 'output_url' in data:
+        return data['output_url']
+    else:
+        return 'Sorry, there was an error generating the image.'
+
+@app.on_message(filters.command("imgd", prefixes="/"))
+async def generate_image_cmd(_, message):
+    if len(message.command) > 1:
+        text = " ".join(message.command[1:])
+        image_url = generate_image_from_text(text)
+        await message.reply(image_url)
+    else:
+        await message.reply("Please use /imgd <text> to generate an image.")
 
 # Run the bot
 app.run()
