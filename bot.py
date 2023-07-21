@@ -123,56 +123,38 @@ async def process_dm(client: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
-IMAGGA_API_KEY = "acc_9047984d96000f6"
-IMAGGA_API_SECRET = "b40fb74f55c2f21e2f0e25cb0c67070c"
+API_KEY = "acc_9047984d96000f6"
+API_SECRET = "b40fb74f55c2f21e2f0e25cb0c67070c"
 
-@app.on_message(filters.command(["caption", "cap"]))
-async def image_captioning_command(_, message: Message):
-    # Check if the command is replying to a photo message
+@app.on_message(filters.command("caption"))
+async def image_caption_command(_, message: Message):
     if message.reply_to_message and message.reply_to_message.photo:
-        txt = await message.reply("**Generating caption...**")
+        # Get the largest photo from the list
+        photo = message.reply_to_message.photo[-1]
 
-        # Get the file ID of the largest image
-        file_id = message.reply_to_message.photo.file_id
-
-        # Download the image using the file ID
-        file_path = await app.download_media(file_id)
-
-        # Declare caption variable with a default value
-        caption = None
+        # Download the photo
+        file_path = await app.download_media(photo)
 
         # Perform image captioning using Imagga API
-        url = "https://api.imagga.com/v2/tags"
-        headers = {
-            "Authorization": f"Basic {IMAGGA_API_KEY}:{IMAGGA_API_SECRET}"
-        }
-        with open(file_path, "rb") as image_file:
-            image_data = image_file.read()
+        url = f"https://api.imagga.com/v2/tags?image_url={file_path}"
+        auth = (API_KEY, API_SECRET)
 
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.post(url, files={"image": image_data}, headers=headers)
-                response.raise_for_status()
-                tags = response.json()["result"]["tags"]
-                caption = ", ".join(tag["tag"]["en"] for tag in tags)
+        response = requests.get(url, auth=auth)
 
-                await txt.edit(f"**Caption:** {caption}")
-            except httpx.HTTPError as e:
-                await txt.edit(f"**An HTTP error occurred: {str(e)}**")
-            except Exception as e:
-                await txt.edit(f"**An error occurred: {str(e)}**")
+        if response.status_code == 200:
+            tags = response.json()['result']['tags']
+            caption = ", ".join(tag['tag']['en'] for tag in tags)
 
-        # Remove the downloaded image after processing
-        import os
-        os.remove(file_path)
-
-        # Reply with the captioned photo
-        if caption is not None:
-            await message.reply_photo(file_path, caption=f"**Caption:** {caption}")
+            await message.reply(f"**Caption:** {caption}")
         else:
             await message.reply("Failed to generate a caption for the image.")
+
+        # Remove the downloaded photo after processing
+        import os
+        os.remove(file_path)
     else:
         await message.reply("Please use this command by replying to a photo message.")
+
 
 @app.on_message(filters.command("imagine"))
 async def imagine_command(_: Client, message: Message):
