@@ -52,10 +52,10 @@ async def help_callback(_, callback_query):
 
 @app.on_message(filters.command("chat"))
 async def gpt(_: Client, message: Message):
-    txt = await message.reply("```Typing........```")
+    txt = await message.reply("Typing.......")
 
     if len(message.command) < 2:
-        return await txt.edit("```Please provide a message too.```")
+        return await txt.edit("Please provide a message too.")
 
     query = message.text.split(maxsplit=1)[1]
 
@@ -93,14 +93,14 @@ async def gpt(_: Client, message: Message):
             else:
                 await txt.edit("**An error occurred. No response received from the API.**")
         except httpx.HTTPError as e:
-            await txt.edit(f"**An HTTP error occurred:``` {str(e)}``` **")
+            await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
-            await txt.edit(f"**An error occurred:``` {str(e)}``` **")
+            await txt.edit(f"**An error occurred: {str(e)}**")
 
 @app.on_message(filters.private)
 async def process_dm(client: Client, message: Message):
     # Handle DM messages without a specific command
-    txt = await message.reply("```Typing....```")
+    txt = await message.reply("Typing....")
 
     query = message.text
 
@@ -138,9 +138,9 @@ async def process_dm(client: Client, message: Message):
             else:
                 await txt.edit("**An error occurred. No response received from the API.**")
         except httpx.HTTPError as e:
-            await txt.edit(f"**An HTTP error occurred:``` {str(e)}``` **")
+            await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
-            await txt.edit(f"**An error occurred:``` {str(e)}``` **")
+            await txt.edit(f"**An error occurred: {str(e)}**")
 
 # Run the bot
 app.run()
