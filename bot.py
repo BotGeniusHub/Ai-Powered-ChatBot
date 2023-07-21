@@ -14,6 +14,7 @@ BOT_TOKEN = "6390766852:AAHAXsP3NHPX2NbnRaFDZA9ZH1h6FyNH1K4"
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # ... (other parts of the code)
+
 # Dictionary to store the conversation history for each user
 conversation_history = {}
 
