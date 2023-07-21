@@ -145,12 +145,16 @@ async def process_dm(client: Client, message: Message):
 # Set up logging
 logging.basicConfig(level=logging.ERROR)
 
+# Connect to MongoDB
+mongo_client = MongoClient("mongodb+srv://sonu55:sonu55@cluster0.vqztrvk.mongodb.net/?retryWrites=true&w=majority")
+db = mongo_client["my_bot_db"]
+user_collection = db["users"]
 
 @app.on_message(filters.command("broadcast") & filters.private)
 async def broadcast_command(_: Client, message: Message):
     try:
         # Check if the user is the bot owner (You can change this based on your needs)
-        if message.from_user.id != YOUR_BOT_OWNER_ID:
+        if message.from_user.id != 6198858059:
             return
 
         # Get the message to be broadcasted
