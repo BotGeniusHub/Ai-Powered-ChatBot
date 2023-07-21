@@ -1,8 +1,9 @@
 import httpx
 import requests
 from pyrogram import filters, Client
-from pyrogram.types import Message
+
 from io import BytesIO
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, Massage
 
 # Replace these with your actual values
 API_ID = 19099900
@@ -14,22 +15,39 @@ app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 # Dictionary to store the conversation history for each user
 conversation_history = {}
 
-# Help menu text
-help_text = (
-    "**Usage Guide**\n"
-    "1. Send /start to begin the chatbot.\n"
-    "2. Send /help to display this help menu.\n"
-    "3. Use /chat followed by your message to chat with the AI chatbot.\n"
-    "4. Use /imagine followed by your text to generate an image based on the text.\n"
-)
-
 @app.on_message(filters.command("start"))
 async def start_command(_: Client, message: Message):
-    await message.reply("Welcome to MyBot! I am an AI-powered chatbot. Send /help for more information.")
+    # Create the inline keyboard with the help button
+    inline_keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Help", callback_data="help")]]
+    )
 
-@app.on_message(filters.command("help"))
-async def help_command(_: Client, message: Message):
-    await message.reply(help_text)
+    # Send the start message with the inline keyboard
+    start_msg = await message.reply(
+        "Welcome to MyBot! I am an AI-powered chatbot. Send /help for more information.",
+        reply_markup=inline_keyboard
+    )
+
+@app.on_callback_query(filters.regex("help"))
+async def help_callback(_, callback_query):
+    # Answer the callback query to remove the "typing" status
+    await callback_query.answer()
+
+    # Get the start message that triggered the callback query
+    start_msg = callback_query.message
+
+    # Create the help text
+    help_text = (
+        "**Usage Guide**\n"
+        "1. Use /chat followed by your message to chat with the AI chatbot.\n"
+        "2. Use /imagine followed by your text to generate an image based on the text.\n"
+    )
+
+    # Send the help text as a new message
+    await start_msg.reply(help_text)
+
+    # Delete the start message
+    await start_msg.delete()
 
 @app.on_message(filters.command("chat"))
 async def gpt(_: Client, message: Message):
@@ -123,44 +141,9 @@ async def process_dm(client: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
-API_KEY = "acc_9047984d96000f6"
-API_SECRET = "b40fb74f55c2f21e2f0e25cb0c67070c"
-
-@app.on_message(filters.command("caption"))
-async def image_caption_command(_, message: Message):
-    if message.reply_to_message and message.reply_to_message.photo:
-        # Get the largest photo from the list
-        photo = message.reply_to_message.photo[-1]
-
-        # Download the photo
-        file_path = await app.download_media(photo)
-
-        # Perform image captioning using Imagga API
-        url = f"https://api.imagga.com/v2/tags?image_url={file_path}"
-        auth = (API_KEY, API_SECRET)
-
-        response = requests.get(url, auth=auth)
-
-        if response.status_code == 200:
-            tags = response.json()['result']['tags']
-            caption = ", ".join(tag['tag']['en'] for tag in tags)
-
-            await message.reply(f"**Caption:** {caption}")
-        else:
-            await message.reply("Failed to generate a caption for the image.")
-
-        # Remove the downloaded photo after processing
-        import os
-        os.remove(file_path)
-    else:
-        await message.reply("Please use this command by replying to a photo message.")
-
-
 @app.on_message(filters.command("imagine"))
 async def imagine_command(_: Client, message: Message):
     await message.reply("Coming soon! I will be able to generate images from your text soon. Stay tuned!")
 
 
 app.run()
-
-            
