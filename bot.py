@@ -128,6 +128,44 @@ async def process_dm(client: Client, message: Message):
     # Respond to DM messages without a specific command
     txt = await message.reply("No need to use this command in private chat. You can send massage me direct")
 
+IMAGGA_API_KEY = "acc_9047984d96000f6"
+IMAGGA_API_SECRET = "b40fb74f55c2f21e2f0e25cb0c67070c"
+
+@app.on_message(filters.photo)
+async def image_captioning(client: Client, message: Message):
+    txt = await message.reply("**Generating caption...**")
+
+    # Get the file ID of the largest image
+    file_id = message.photo[-1].file_id
+
+    # Download the image using the file ID
+    file_path = await client.download_media(file_id)
+
+    # Perform image captioning using Imagga API
+    url = "https://api.imagga.com/v2/tags"
+    headers = {
+        "Authorization": f"Basic {IMAGGA_API_KEY}:{IMAGGA_API_SECRET}"
+    }
+    with open(file_path, "rb") as image_file:
+        image_data = image_file.read()
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url, files={"image": image_data}, headers=headers)
+            response.raise_for_status()
+            tags = response.json()["result"]["tags"]
+            caption = ", ".join(tag["tag"]["en"] for tag in tags)
+
+            await txt.edit(f"**Caption:** {caption}")
+        except httpx.HTTPError as e:
+            await txt.edit(f"**An HTTP error occurred: {str(e)}**")
+        except Exception as e:
+            await txt.edit(f"**An error occurred: {str(e)}**")
+
+    # Remove the downloaded image after processing
+    import os
+    os.remove(file_path)
+
 @app.on_message(filters.command("imagine"))
 async def imagine_command(_: Client, message: Message):
     await message.reply("Coming soon! I will be able to generate images from your text soon. Stay tuned!")
