@@ -25,9 +25,41 @@ async def start_command(_: Client, message: Message):
 
     # Send the start message with the inline keyboard
     start_msg = await message.reply(
-        "``Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!```",
+        "Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!",
         reply_markup=inline_keyboard
     )
+
+# ... (other parts of the code)
+
+# Store the message ID of the start message in the conversation history
+conversation_history[chat_id] = {"start_msg_id": start_msg.message_id}
+
+# ... (other parts of the code)
+
+@app.on_callback_query(filters.regex("back"))
+async def back_to_start_callback(_, callback_query):
+    # Answer the callback query to remove the "typing" status
+    await callback_query.answer()
+
+    # Get the user's chat ID
+    chat_id = callback_query.from_user.id
+
+    # Check if there's a stored start message ID in the conversation history
+    if chat_id in conversation_history and "start_msg_id" in conversation_history[chat_id]:
+        # Get the start message ID from the conversation history
+        start_msg_id = conversation_history[chat_id]["start_msg_id"]
+
+        # Get the current message and delete it
+        current_msg = callback_query.message
+        await current_msg.delete()
+
+        # Send the start message back to the user
+        await app.send_message(chat_id, "``Welcome! I am an AI-Powered Chatbot. Type on help button to know my Power...!```")
+
+        # Update the conversation history to remove the start message ID
+        conversation_history[chat_id].pop("start_msg_id", None)
+
+# ... (other parts of the code)
 
 @app.on_callback_query(filters.regex("help"))
 async def help_callback(_, callback_query):
@@ -44,11 +76,15 @@ async def help_callback(_, callback_query):
         "2. Use /imagine followed by your text to generate an image based on the text. Soon.\n"
     )
 
-    # Send the help text as a new message
-    await start_msg.reply(help_text)
+    # Add the back button to the help text message
+    back_button = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Back", callback_data="back")]]
+    )
 
-    # Delete the start message
-    await start_msg.delete()
+    # Send the help text as a new message with the back button
+    await start_msg.reply(help_text, reply_markup=back_button)
+
+# ... (other parts of the code)
 
 @app.on_message(filters.command("chat"))
 async def gpt(_: Client, message: Message):
