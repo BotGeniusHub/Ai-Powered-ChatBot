@@ -28,7 +28,7 @@ async def start_command(_: Client, message: Message):
 
     # Send the start message with the inline keyboard
     start_msg = await message.reply(
-        "``Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!```",
+       "Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!",
         reply_markup=inline_keyboard
     )
 
@@ -54,7 +54,7 @@ async def back_to_start_callback(_, callback_query):
         await current_msg.delete()
 
         # Send the start message back to the user
-        await app.send_message(chat_id, "``Welcome! I am an AI-Powered Chatbot. Type on help button to know my Power...!```")
+        await app.send_message(chat_id, "Welcome! I am an AI-Powered Chatbot. Type on help button to know my Power...!")
 
         # Update the conversation history to remove the start message ID
         conversation_history[chat_id].pop("start_msg_id", None)
