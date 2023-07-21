@@ -138,6 +138,9 @@ async def image_captioning_command(_, message: Message):
         # Download the image using the file ID
         file_path = await app.download_media(file_id)
 
+        # Declare caption variable with a default value
+        caption = None
+
         # Perform image captioning using Imagga API
         url = "https://api.imagga.com/v2/tags"
         headers = {
@@ -164,10 +167,12 @@ async def image_captioning_command(_, message: Message):
         os.remove(file_path)
 
         # Reply with the captioned photo
-        await message.reply_photo(file_path, caption=f"**Caption:** {caption}")
+        if caption is not None:
+            await message.reply_photo(file_path, caption=f"**Caption:** {caption}")
+        else:
+            await message.reply("Failed to generate a caption for the image.")
     else:
         await message.reply("Please use this command by replying to a photo message.")
-
 
 @app.on_message(filters.command("imagine"))
 async def imagine_command(_: Client, message: Message):
