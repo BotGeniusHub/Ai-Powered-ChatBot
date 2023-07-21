@@ -13,6 +13,7 @@ BOT_TOKEN = "6390766852:AAHAXsP3NHPX2NbnRaFDZA9ZH1h6FyNH1K4"
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
+# ... (other parts of the code)
 # Dictionary to store the conversation history for each user
 conversation_history = {}
 
@@ -25,16 +26,13 @@ async def start_command(_: Client, message: Message):
 
     # Send the start message with the inline keyboard
     start_msg = await message.reply(
-        "Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!",
+        "``Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!```",
         reply_markup=inline_keyboard
     )
 
-# ... (other parts of the code)
-
-# Store the message ID of the start message in the conversation history
-conversation_history[chat_id] = {"start_msg_id": start_msg.message_id}
-
-# ... (other parts of the code)
+    # Store the start message ID in the conversation history along with the user's chat ID
+    chat_id = message.chat.id
+    conversation_history[chat_id] = {"start_msg_id": start_msg.message_id}
 
 @app.on_callback_query(filters.regex("back"))
 async def back_to_start_callback(_, callback_query):
@@ -66,8 +64,17 @@ async def help_callback(_, callback_query):
     # Answer the callback query to remove the "typing" status
     await callback_query.answer()
 
-    # Get the start message that triggered the callback query
-    start_msg = callback_query.message
+    # Get the user's chat ID
+    chat_id = callback_query.from_user.id
+
+    # Check if there's a stored start message ID in the conversation history
+    if chat_id in conversation_history and "start_msg_id" in conversation_history[chat_id]:
+        # Get the start message ID from the conversation history
+        start_msg_id = conversation_history[chat_id]["start_msg_id"]
+
+        # Get the current message and delete it
+        current_msg = callback_query.message
+        await current_msg.delete()
 
     # Create the help text
     help_text = (
@@ -82,7 +89,7 @@ async def help_callback(_, callback_query):
     )
 
     # Send the help text as a new message with the back button
-    await start_msg.reply(help_text, reply_markup=back_button)
+    await app.send_message(chat_id, help_text, reply_markup=back_button)
 
 # ... (other parts of the code)
 
