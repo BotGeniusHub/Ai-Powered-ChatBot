@@ -123,6 +123,11 @@ async def process_dm(client: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
+@app.on_message(~filters.command("chat") & filters.private)
+async def process_dm(client: Client, message: Message):
+    # Respond to DM messages without a specific command
+    txt = await message.reply("No need to use this command in private chat. You can send massage me direct")
+
 @app.on_message(filters.command("imagine"))
 async def imagine_command(_: Client, message: Message):
     await message.reply("Coming soon! I will be able to generate images from your text soon. Stay tuned!")
