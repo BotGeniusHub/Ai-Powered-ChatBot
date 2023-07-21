@@ -9,7 +9,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 # Replace these with your actual values
 API_ID = 19099900
 API_HASH = "2b445de78e5baf012a0793e60bd4fbf5"
-BOT_TOKEN = "6377102011:AAHJJ7AUKZhQKcAnHPQtjg9put5mG8vSjEc"
+BOT_TOKEN = "6390766852:AAHAXsP3NHPX2NbnRaFDZA9ZH1h6FyNH1K4"
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -25,7 +25,7 @@ async def start_command(_: Client, message: Message):
 
     # Send the start message with the inline keyboard
     start_msg = await message.reply(
-        "``Welcome! I am an AI-Powered Chatbot. Type on help to know my Power...!```",
+        "``Welcome! I am an AI-Powered Chatbot. Type on help  button to know my Power...!```",
         reply_markup=inline_keyboard
     )
 
