@@ -18,7 +18,7 @@ conversation_history = {}
 @app.on_message(filters.command("start"))
 async def start_command(_: Client, message: Message):
     await message.reply(
-        "Welcome! I am an AI-Powered Chatbot. Type /chat followed by your message to chat with me!"
+        "Welcome! I am an AI-Powered Chatbot. Type /chat followed by your message to chat with me!\nMade With : @BotGeniusHub"
     )
 
 @app.on_message(filters.command("chat"))
@@ -63,39 +63,6 @@ async def gpt(_: Client, message: Message):
                 await txt.edit(bot_response)
             else:
                 await txt.edit("**An error occurred. No response received from the API.**")
-        except httpx.HTTPError as e:
-            await txt.edit(f"**An HTTP error occurred: {str(e)}**")
-        except Exception as e:
-            await txt.edit(f"**An error occurred: {str(e)}**")
-
-@app.on_message(filters.command("imagine"))
-async def imagine(_: Client, message: Message):
-    txt = await message.reply("Generating image...")
-
-    if len(message.command) < 2:
-        return await txt.edit("Please provide a text to generate an image.")
-
-    text = message.text.split(maxsplit=1)[1]
-
-    url = "https://api.safone.me/imagine"
-    payload = {"text": text}
-
-    async with httpx.AsyncClient(timeout=20) as client:
-        try:
-            response = await client.post(
-                url, json=payload, headers={"Content-Type": "application/json"}
-            )
-            response.raise_for_status()
-            results = response.json()
-
-            # Check if the API response contains the 'image' key
-            if "image" in results:
-                image_url = results["image"]
-
-                await txt.delete()
-                await message.reply_photo(image_url)
-            else:
-                await txt.edit("**An error occurred. No image received from the API.**")
         except httpx.HTTPError as e:
             await txt.edit(f"**An HTTP error occurred: {str(e)}**")
         except Exception as e:
