@@ -2,7 +2,7 @@ import httpx
 from pymongo import MongoClient
 import logging
 import requests
-from pyrogram import filters, Client
+from pyrogram import filters, Client, idle
 from io import BytesIO
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -25,7 +25,7 @@ async def start_command(_: Client, message: Message):
 
     # Send the start message with the inline keyboard
     start_msg = await message.reply(
-        "Welcome to MyBot! I am an AI-powered chatbot. Send /help for more information.",
+        "``Welcome! I am an AI-Powered Chatbot. Type on help to know my Power...!```",
         reply_markup=inline_keyboard
     )
 
@@ -41,7 +41,7 @@ async def help_callback(_, callback_query):
     help_text = (
         "**Usage Guide**\n"
         "1. Use /chat followed by your message to chat with the AI chatbot.\n"
-        "2. Use /imagine followed by your text to generate an image based on the text.\n"
+        "2. Use /imagine followed by your text to generate an image based on the text. Soon.\n"
     )
 
     # Send the help text as a new message
@@ -52,10 +52,10 @@ async def help_callback(_, callback_query):
 
 @app.on_message(filters.command("chat"))
 async def gpt(_: Client, message: Message):
-    txt = await message.reply("```Typing....```")
+    txt = await message.reply("```Typing........```")
 
     if len(message.command) < 2:
-        return await txt.edit("**Please provide a message too.**")
+        return await txt.edit("```Please provide a message too.```")
 
     query = message.text.split(maxsplit=1)[1]
 
@@ -142,57 +142,6 @@ async def process_dm(client: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred:``` {str(e)}``` **")
 
-# Set up logging
-logging.basicConfig(level=logging.ERROR)
-
-# Connect to MongoDB
-mongo_client = MongoClient("mongodb+srv://sonu55:sonu55@cluster0.vqztrvk.mongodb.net/?retryWrites=true&w=majority")
-db = mongo_client["my_bot_db"]
-user_collection = db["users"]
-
-@app.on_message(filters.command("broadcast") & filters.private)
-async def broadcast_command(_: Client, message: Message):
-    try:
-        # Check if the user is the bot owner (You can change this based on your needs)
-        if message.from_user.id != 6198858059:
-            return
-
-        # Get the message to be broadcasted
-        broadcast_message = message.text.split(maxsplit=1)[1]
-
-        # Get all users from MongoDB
-        all_users = user_collection.find()
-
-        # Broadcast the message to all users
-        for user_doc in all_users:
-            user_id = user_doc["_id"]
-            try:
-                await app.send_message(user_id, broadcast_message)
-            except Exception as e:
-                logging.error(f"Error broadcasting to user {user_id}: {e}")
-
-        await message.reply("Broadcast sent to all users.")
-    except Exception as e:
-        logging.error(f"Error in broadcast command: {e}")
-
-@app.on_message(filters.command("stats"))
-async def stats_command(_: Client, message: Message):
-    try:
-        # Get the number of users from MongoDB
-        num_users = user_collection.count_documents({})
-
-        # Get the number of groups
-        all_groups = await app.get_chat_members_count()
-
-        stats_text = f"Number of Users: {num_users}\nNumber of Groups: {all_groups}"
-
-        await message.reply(stats_text)
-    except Exception as e:
-        logging.error(f"Error in stats command: {e}")
-
-@app.on_message(filters.command("imagine"))
-async def imagine_command(_: Client, message: Message):
-    await message.reply("Coming soon! I will be able to generate images from your text soon. Stay tuned!")
-
-
+# Run the bot
 app.run()
+idle()
