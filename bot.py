@@ -1,4 +1,6 @@
 import httpx
+from pymongo import MongoClient
+import logging
 import requests
 from pyrogram import filters, Client
 from io import BytesIO
@@ -139,6 +141,50 @@ async def process_dm(client: Client, message: Message):
             await txt.edit(f"**An HTTP error occurred:``` {str(e)}``` **")
         except Exception as e:
             await txt.edit(f"**An error occurred:``` {str(e)}``` **")
+
+# Set up logging
+logging.basicConfig(level=logging.ERROR)
+
+
+@app.on_message(filters.command("broadcast") & filters.private)
+async def broadcast_command(_: Client, message: Message):
+    try:
+        # Check if the user is the bot owner (You can change this based on your needs)
+        if message.from_user.id != YOUR_BOT_OWNER_ID:
+            return
+
+        # Get the message to be broadcasted
+        broadcast_message = message.text.split(maxsplit=1)[1]
+
+        # Get all users from MongoDB
+        all_users = user_collection.find()
+
+        # Broadcast the message to all users
+        for user_doc in all_users:
+            user_id = user_doc["_id"]
+            try:
+                await app.send_message(user_id, broadcast_message)
+            except Exception as e:
+                logging.error(f"Error broadcasting to user {user_id}: {e}")
+
+        await message.reply("Broadcast sent to all users.")
+    except Exception as e:
+        logging.error(f"Error in broadcast command: {e}")
+
+@app.on_message(filters.command("stats"))
+async def stats_command(_: Client, message: Message):
+    try:
+        # Get the number of users from MongoDB
+        num_users = user_collection.count_documents({})
+
+        # Get the number of groups
+        all_groups = await app.get_chat_members_count()
+
+        stats_text = f"Number of Users: {num_users}\nNumber of Groups: {all_groups}"
+
+        await message.reply(stats_text)
+    except Exception as e:
+        logging.error(f"Error in stats command: {e}")
 
 @app.on_message(filters.command("imagine"))
 async def imagine_command(_: Client, message: Message):
