@@ -105,7 +105,7 @@ async def imagine(_: Client, message: Message):
             data={
                 'text': text_to_imagine,
             },
-            headers={'api-key': DEEPAI_API_KEY}
+            headers={'api-key': 'f12e85a7-0bd7-4641-bc6c-574623677cf7'}
         )
         response.raise_for_status()
         api_response = response.json()
