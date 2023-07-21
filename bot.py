@@ -19,9 +19,8 @@ help_text = (
     "**Usage Guide**\n"
     "1. Send /start to begin the chatbot.\n"
     "2. Send /help to display this help menu.\n"
-    "3. Send /stop to stop the current conversation.\n"
-    "4. Use /chat followed by your message to chat with the AI chatbot.\n"
-    "5. Use /imagine followed by your text to generate an image based on the text.\n"
+    "3. Use /chat followed by your message to chat with the AI chatbot.\n"
+    "4. Use /imagine followed by your text to generate an image based on the text.\n"
 )
 
 @app.on_message(filters.command("start"))
@@ -32,71 +31,17 @@ async def start_command(_: Client, message: Message):
 async def help_command(_: Client, message: Message):
     await message.reply(help_text)
 
-@app.on_message()
-async def handle_messages(client: Client, message: Message):
-    # Check if the message is from a group
-    if message.chat.type == "group" or message.chat.type == "supergroup":
-        # Check if the message starts with the bot's username (mention)
-        if message.text and message.text.startswith(f"@{client.me.username}"):
-            # Process the message as a command
-            await process_command(client, message)
-    else:
-        # If it's a DM, process the message directly without using a command
-        await process_message(client, message)
-
-async def process_command(client: Client, message: Message):
-    # Handle commands with "/chat" prefix
-    if message.text.startswith("/chat"):
-        txt = await message.reply("**writing....**")
-
-        query = message.text.split(maxsplit=1)[1]
-
-        # Retrieve conversation history for this user
-        chat_id = message.from_user.id
-        if chat_id in conversation_history:
-            dialog_messages = conversation_history[chat_id]
-        else:
-            dialog_messages = []
-
-        url = "https://api.safone.me/chatgpt"
-        payload = {
-            "message": query,
-            "chat_mode": "assistant",
-            "dialog_messages": dialog_messages,
-        }
-
-        async with httpx.AsyncClient(timeout=20) as http_client:
-            try:
-                response = await http_client.post(
-                    url, json=payload, headers={"Content-Type": "application/json"}
-                )
-                response.raise_for_status()
-                results = response.json()
-
-                # Check if the API response contains the 'message' key
-                if "message" in results:
-                    bot_response = results["message"]
-
-                    # Update conversation history with the latest message
-                    dialog_messages.append({"bot": bot_response, "user": query})
-                    conversation_history[chat_id] = dialog_messages
-
-                    await txt.edit(bot_response)
-                else:
-                    await txt.edit("**An error occurred. No response received from the API.**")
-            except httpx.HTTPError as e:
-                await txt.edit(f"**An HTTP error occurred: {str(e)}**")
-            except Exception as e:
-                await txt.edit(f"**An error occurred: {str(e)}**")
-
-async def process_message(client: Client, message: Message):
-    # Handle DM messages without a specific command
+@app.on_message(filters.command("chat"))
+async def gpt(_: Client, message: Message):
     txt = await message.reply("**writing....**")
 
-    query = message.text
+    if len(message.command) < 2:
+        return await txt.edit("**Please provide a message too.**")
+
+    query = message.text.split(maxsplit=1)[1]
 
     # Retrieve conversation history for this user
-    chat_id = message.from_user.id
+    chat_id = message.chat.id
     if chat_id in conversation_history:
         dialog_messages = conversation_history[chat_id]
     else:
@@ -109,9 +54,9 @@ async def process_message(client: Client, message: Message):
         "dialog_messages": dialog_messages,
     }
 
-    async with httpx.AsyncClient(timeout=20) as http_client:
+    async with httpx.AsyncClient(timeout=20) as client:
         try:
-            response = await http_client.post(
+            response = await client.post(
                 url, json=payload, headers={"Content-Type": "application/json"}
             )
             response.raise_for_status()
@@ -133,13 +78,55 @@ async def process_message(client: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
+@app.on_message(filters.private)
+async def process_dm(client: Client, message: Message):
+    # Handle DM messages without a specific command
+    txt = await message.reply("**writing....**")
 
-@app.on_message(filters.command("stop"))
-async def stop_command(_: Client, message: Message):
+    query = message.text
+
+    # Retrieve conversation history for this user
     chat_id = message.from_user.id
     if chat_id in conversation_history:
-        del conversation_history[chat_id]
-    await message.reply("Conversation stopped. Send /start to begin a new chat.")
+        dialog_messages = conversation_history[chat_id]
+    else:
+        dialog_messages = []
+
+    url = "https://api.safone.me/chatgpt"
+    payload = {
+        "message": query,
+        "chat_mode": "assistant",
+        "dialog_messages": dialog_messages,
+    }
+
+    async with httpx.AsyncClient(timeout=20) as client:
+        try:
+            response = await client.post(
+                url, json=payload, headers={"Content-Type": "application/json"}
+            )
+            response.raise_for_status()
+            results = response.json()
+
+            # Check if the API response contains the 'message' key
+            if "message" in results:
+                bot_response = results["message"]
+
+                # Update conversation history with the latest message
+                dialog_messages.append({"bot": bot_response, "user": query})
+                conversation_history[chat_id] = dialog_messages
+
+                await txt.edit(bot_response)
+            else:
+                await txt.edit("**An error occurred. No response received from the API.**")
+        except httpx.HTTPError as e:
+            await txt.edit(f"**An HTTP error occurred: {str(e)}**")
+        except Exception as e:
+            await txt.edit(f"**An error occurred: {str(e)}**")
+
+@app.on_message(filters.command("imagine"))
+async def imagine_command(_: Client, message: Message):
+    await message.reply("Coming soon! I will be able to generate images from your text soon. Stay tuned!")
+
 
 app.run()
 
