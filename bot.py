@@ -123,11 +123,6 @@ async def process_dm(client: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
-@app.on_message(~filters.command("chat") & filters.private)
-async def process_dm(client: Client, message: Message):
-    # Respond to DM messages without a specific command
-    txt = await message.reply("No need to use this command in private chat. You can send massage me direct")
-
 IMAGGA_API_KEY = "acc_9047984d96000f6"
 IMAGGA_API_SECRET = "b40fb74f55c2f21e2f0e25cb0c67070c"
 
@@ -138,7 +133,7 @@ async def image_captioning_command(_, message: Message):
         txt = await message.reply("**Generating caption...**")
 
         # Get the file ID of the largest image
-        file_id = message.reply_to_message.photo[-1].file_id
+        file_id = message.reply_to_message.photo.file_id
 
         # Download the image using the file ID
         file_path = await app.download_media(file_id)
