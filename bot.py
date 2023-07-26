@@ -124,7 +124,7 @@ async def alive_command(_: Client, message: Message):
         f"**Uptime:** {get_uptime()}"
     )
 
-    await message.reply_text(bot_info, parse_mode="markdown")
+    await message.reply_text(bot_info, parse_mode="markdown", disable_web_page_preview=True)
 
 def get_uptime():
     uptime_seconds = int(time.time() - start_time)
