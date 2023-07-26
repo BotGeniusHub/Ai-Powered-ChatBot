@@ -126,7 +126,7 @@ async def alive_command(_: Client, message: Message):
     # Add horizontal line
     horizontal_line = "\n" + "=" * 30 + "\n"
 
-    await message.reply_text(horizontal_line + bot_info + horizontal_line ")
+    await message.reply_text(horizontal_line + bot_info + horizontal_line)
 
 def get_uptime():
     uptime_seconds = int(time.time() - start_time)
