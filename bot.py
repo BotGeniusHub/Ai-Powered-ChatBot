@@ -79,7 +79,7 @@ start_time = time.time()
 @app.on_message(filters.command("ping"))
 async def ping_pong(_: Client, message: Message):
     # Show typing status while calculating ping
-    await message.chat.action("🏓")
+    await app.send_chat_action(message.chat.id, "typing")
 
     # Calculate the bot's ping
     start = time.time()
