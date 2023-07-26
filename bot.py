@@ -1,6 +1,9 @@
 import os
 import httpx
 import requests
+import platform
+import pyrogram
+import sys
 from pyrogram import filters, Client, idle
 from io import BytesIO
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
@@ -106,40 +109,29 @@ async def info_command(_: Client, message: Message):
     await message.reply(bot_info)
 
 
-# Dictionary to store active polls
-active_polls = {}
 
-@app.on_message(filters.command("poll"))
-async def create_poll(_: Client, message: Message):
-    if len(message.command) < 4:
-        await message.reply("Usage: /poll <question> <option1> <option2> ...")
-        return
 
-    question = message.command[1]
-    options = message.command[2:]
+@app.on_message(filters.command("alive"))
+async def alive_command(_: Client, message: Message):
+    owner_username = "SexyNano"  # Replace with the bot owner's username
+    python_version = platform.python_version()
+    pyrogram_version = pyrogram.__version__
 
-    if len(options) < 2:
-        await message.reply("A poll requires at least two options.")
-        return
+    bot_info = (
+        f"**🤖 Bot Info**\n"
+        f"Owner: [{owner_username}](https://t.me/{owner_username})\n"
+        f"Python Version: {python_version}\n"
+        f"Pyrogram Version: {pyrogram_version}\n"
+        f"Running on: {platform.system()} {platform.release()}\n"
+        f"Uptime: {get_uptime()}"
+    )
 
-    # Create the poll
-    poll_id = len(active_polls) + 1
-    poll = {
-        "question": question,
-        "options": options,
-        "votes": {option: 0 for option in options},
-        "closed": False,
-    }
+    await message.reply_text(bot_info, parse_mode="Markdown")
 
-    # Save the poll in the active_polls dictionary
-    active_polls[poll_id] = poll
-
-    # Send the poll to the chat
-    poll_message = f"Poll #{poll_id}: {question}\n"
-    for index, option in enumerate(options, start=1):
-        poll_message += f"{index}. {option}\n"
-
-    await message.reply(poll_message)
+def get_uptime():
+    uptime_seconds = int(time.time() - start_time)
+    uptime_string = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
+    return uptime_string
 
 print("Bot deployed successfully!")  # Add a log message for successful deployment
 
