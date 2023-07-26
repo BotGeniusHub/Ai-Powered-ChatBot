@@ -1,5 +1,6 @@
 import os
 import httpx
+import time
 import requests
 import platform
 import pyrogram
@@ -74,7 +75,6 @@ async def gpt(_: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
-import time
 
 # ... Existing code ...
 
@@ -118,15 +118,15 @@ async def alive_command(_: Client, message: Message):
     pyrogram_version = pyrogram.__version__
 
     bot_info = (
-        f"**🤖 Bot Info**\n"
-        f"Owner: [{owner_username}](https://t.me/{owner_username})\n"
-        f"Python Version: {python_version}\n"
-        f"Pyrogram Version: {pyrogram_version}\n"
-        f"Running on: {platform.system()} {platform.release()}\n"
-        f"Uptime: {get_uptime()}"
+        f"<b>🤖 Bot Info</b>\n"
+        f"<b>Owner:</b> <a href='https://t.me/{owner_username}'>{owner_username}</a>\n"
+        f"<b>Python Version:</b> {python_version}\n"
+        f"<b>Pyrogram Version:</b> {pyrogram_version}\n"
+        f"<b>Running on:</b> {platform.system()} {platform.release()}\n"
+        f"<b>Uptime:</b> {get_uptime()}"
     )
 
-    await message.reply_text(bot_info, parse_mode="Markdown")
+    await message.reply_text(bot_info, parse_mode="html")
 
 def get_uptime():
     uptime_seconds = int(time.time() - start_time)
