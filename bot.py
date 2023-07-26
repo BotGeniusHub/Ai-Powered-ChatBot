@@ -94,6 +94,17 @@ async def ping_pong(_: Client, message: Message):
     # Add the ping and uptime information to the reply
     await msg.edit(f"{message_text}\nPing: {ping_duration:.2f} ms\nUptime: {uptime_string}")
 
+
+@app.on_message(filters.command("info"))
+async def info_command(_: Client, message: Message):
+    bot_info = (
+        "I am an AI-powered Chatbot bot. Created using Python and Pyrogram. \n"
+        "Version: 1.0.0\n"
+        "Purpose: To provide assistance and chat with users.\n"
+        "Creator: @SexyNano"
+    )
+    await message.reply(bot_info)
+
     
 print("Bot deployed successfully!")  # Add a log message for successful deployment
 
