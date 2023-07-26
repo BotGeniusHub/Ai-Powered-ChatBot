@@ -105,7 +105,42 @@ async def info_command(_: Client, message: Message):
     )
     await message.reply(bot_info)
 
-    
+
+# Dictionary to store active polls
+active_polls = {}
+
+@app.on_message(filters.command("poll"))
+async def create_poll(_: Client, message: Message):
+    if len(message.command) < 4:
+        await message.reply("Usage: /poll <question> <option1> <option2> ...")
+        return
+
+    question = message.command[1]
+    options = message.command[2:]
+
+    if len(options) < 2:
+        await message.reply("A poll requires at least two options.")
+        return
+
+    # Create the poll
+    poll_id = len(active_polls) + 1
+    poll = {
+        "question": question,
+        "options": options,
+        "votes": {option: 0 for option in options},
+        "closed": False,
+    }
+
+    # Save the poll in the active_polls dictionary
+    active_polls[poll_id] = poll
+
+    # Send the poll to the chat
+    poll_message = f"Poll #{poll_id}: {question}\n"
+    for index, option in enumerate(options, start=1):
+        poll_message += f"{index}. {option}\n"
+
+    await message.reply(poll_message)
+
 print("Bot deployed successfully!")  # Add a log message for successful deployment
 
 # Run the bot
