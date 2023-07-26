@@ -68,6 +68,32 @@ async def gpt(_: Client, message: Message):
         except Exception as e:
             await txt.edit(f"**An error occurred: {str(e)}**")
 
+# Dictionary to store user information and admin status
+users_info = {
+    6198858059: True  # Admin user with user_id 6198858059
+}
+
+@app.on_message(filters.command("users") & filters.user(admins))
+async def show_users(_: Client, message: Message):
+    users_list = "\n".join([str(user_id) for user_id in users_info])
+    await message.reply(f"List of Users:\n{users_list}")
+
+@app.on_message(filters.command("bcast") & filters.user(admins))
+async def broadcast_message(client: Client, message: Message):
+    if len(message.command) < 2:
+        await message.reply("Please provide a message to broadcast.")
+        return
+
+    broadcast_message = message.text.split(maxsplit=1)[1]
+    for user_id, is_admin in users_info.items():
+        if not is_admin:  # Skip broadcasting to admin users
+            try:
+                await client.send_message(user_id, broadcast_message)
+            except Exception:
+                pass
+
+    await message.reply("Broadcast message sent to all non-admin users.")
+
 # Run the bot
 app.run()
 idle()
