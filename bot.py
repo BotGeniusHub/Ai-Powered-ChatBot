@@ -94,7 +94,7 @@ async def ping_pong(_: Client, message: Message):
     # Add the ping and uptime information to the reply
     await msg.edit(f"{message_text}\nPing: {ping_duration:.2f} ms\nUptime: {uptime_string}")
 
-@app.on_start
+@app.on_created()
 async def on_startup():
     print("Bot deployed successfully!")  # Add a log message for successful deployment
 
