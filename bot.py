@@ -95,31 +95,31 @@ async def ping_pong(_: Client, message: Message):
     uptime_string = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
 
     # Add the ping and uptime information to the reply
-    await msg.edit(f"{message_text}\nPing: {ping_duration:.2f} ms\nUptime: {uptime_string}")
+    await msg.edit(f"{message_text}\n**Ping**: {ping_duration:.2f} ms\n**Uptime**: {uptime_string}")
 
 
 @app.on_message(filters.command("info"))
 async def info_command(_: Client, message: Message):
     bot_info = (
-        "I am an AI-powered Chatbot bot. Created using Python and Pyrogram. \n"
-        "Version: 1.0.0\n"
-        "Purpose: To provide assistance and chat with users.\n"
+        "I am an AI-powered Chatbot bot. Created using Python and Pyrogram. \n\n"
+        "Version: 1.0.0\n\n"
+        "Purpose: To provide assistance and chat with users.\n\n"
         "Creator: @SexyNano"
     )
     await message.reply(bot_info)
 
 @app.on_message(filters.command("alive"))
 async def alive_command(_: Client, message: Message):
-    owner_username = "YourUsername"  # Replace with the bot owner's username
+    owner_username = "SexyNano"  # Replace with the bot owner's username
     python_version = platform.python_version()
     pyrogram_version = pyrogram.__version__
 
     bot_info = (
-        "🤖 **Bot Info** 🤖\n\n"
-        f"👨‍💻 **Owner:** [{owner_username}](https://t.me/{owner_username})\n"
-        f"🐍 **Python Version:** {python_version}\n"
-        f"📦 **Pyrogram Version:** {pyrogram_version}\n"
-        f"🏢 **Running on:** {platform.system()} {platform.release()}\n"
+        "🤖 **Bot Is Alive** 🤖\n\n"
+        f"👨‍💻 **Owner:** [Ɲᴀɴᴏ | ❄](https://t.me/{owner_username})\n\n"
+        f"🐍 **Python Version:** {python_version}\n\n"
+        f"📦 **Pyrogram Version:** {pyrogram_version}\n\n"
+        f"🏢 **Running on:** {platform.system()} {platform.release()}\n\n"
         f"⏱️ **Uptime:** {get_uptime()}"
     )
 
