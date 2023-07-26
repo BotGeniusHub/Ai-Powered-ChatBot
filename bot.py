@@ -8,7 +8,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 # Replace these with your actual values
 API_ID = 19099900
 API_HASH = "2b445de78e5baf012a0793e60bd4fbf5"
-BOT_TOKEN = "6390766852:AAHAXsP3NHPX2NbnRaFDZA9ZH1h6FyNH1K4"
+BOT_TOKEN = "6206599982:AAENkopxhCmzexPq9pZB_gFZcVpOmDXwiNU"
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -23,7 +23,7 @@ async def start_command(_: Client, message: Message):
 
 @app.on_message(filters.command("chat"))
 async def gpt(_: Client, message: Message):
-    txt = await message.reply("Typing.......")
+    txt = await message.reply("💬")
 
     if len(message.command) < 2:
         return await txt.edit("Please provide a message too.")
