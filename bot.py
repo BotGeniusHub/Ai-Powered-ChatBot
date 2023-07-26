@@ -116,11 +116,11 @@ async def alive_command(_: Client, message: Message):
     pyrogram_version = pyrogram.__version__
 
     bot_info = (
-        f"🤖 **Bot Info**\n"
-        f"**Owner:** [{owner_username}](https://t.me/{owner_username})\n"
-        f"**Python Version:** {python_version}\n"
-        f"**Pyrogram Version:** {pyrogram_version}\n"
-        f"**Running on:** {platform.system()} {platform.release()}\n"
+        f"🤖 **Bot is Alive**\n\n"
+        f"**Owner:** [Ɲᴀɴᴏ | ❄](https://t.me/{owner_username})\n\n"
+        f"**Python Version:** {python_version}\n\n"
+        f"**Pyrogram Version:** {pyrogram_version}\n\n"
+        f"**Running on:** {platform.system()} {platform.release()}\n\n"
         f"**Uptime:** {get_uptime()}"
     )
 
