@@ -72,24 +72,20 @@ async def gpt(_: Client, message: Message):
             await txt.edit(f"**An error occurred: {str(e)}**")
 
 import time
-from pyrogram.types import ChatAction
 
 # ... Existing code ...
 
+# Record the bot's start time
+start_time = time.time()
+
 @app.on_message(filters.command("ping"))
 async def ping_pong(_: Client, message: Message):
-    # Show typing status while calculating ping
-    await app.send_chat_action(message.chat.id, action=ChatAction.TYPING)
-
     # Calculate the bot's ping
     start = time.time()
-    message_text = "Pong!"
+    message_text = "Pong!🏓"
     msg = await message.reply(message_text)
     end = time.time()
     ping_duration = (end - start) * 1000  # Convert to milliseconds
-
-    # Wait for 5 seconds before updating the message with ping and uptime
-    await asyncio.sleep(5)
 
     # Calculate bot uptime
     uptime_seconds = int(time.time() - start_time)
@@ -97,6 +93,7 @@ async def ping_pong(_: Client, message: Message):
 
     # Add the ping and uptime information to the reply
     await msg.edit(f"{message_text}\nPing: {ping_duration:.2f} ms\nUptime: {uptime_string}")
+
 
 # Run the bot
 app.run()
