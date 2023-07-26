@@ -9,6 +9,9 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 API_ID = 19099900
 API_HASH = "2b445de78e5baf012a0793e60bd4fbf5"
 BOT_TOKEN = "6206599982:AAENkopxhCmzexPq9pZB_gFZcVpOmDXwiNU"
+# List of admin users who can perform sensitive commands
+ADMIN = [6198858059]  # Replace with actual user IDs of admins
+
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -73,12 +76,12 @@ users_info = {
     6198858059: True  # Admin user with user_id 6198858059
 }
 
-@app.on_message(filters.command("users") & filters.user(admins))
+@app.on_message(filters.command("users") & filters.user(ADMIN))
 async def show_users(_: Client, message: Message):
     users_list = "\n".join([str(user_id) for user_id in users_info])
     await message.reply(f"List of Users:\n{users_list}")
 
-@app.on_message(filters.command("bcast") & filters.user(admins))
+@app.on_message(filters.command("bcast") & filters.user(ADMIN))
 async def broadcast_message(client: Client, message: Message):
     if len(message.command) < 2:
         await message.reply("Please provide a message to broadcast.")
