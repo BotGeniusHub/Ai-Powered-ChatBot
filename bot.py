@@ -95,10 +95,10 @@ async def ping_pong(_: Client, message: Message):
     await msg.edit(f"{message_text}\nPing: {ping_duration:.2f} ms\nUptime: {uptime_string}")
 
     
+print("Bot deployed successfully!")  # Add a log message for successful deployment
 
 # Run the bot
 app.run()
 idle()
 
 
-print("Bot deployed successfully!")  # Add a log message for successful deployment
