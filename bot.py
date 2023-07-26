@@ -109,8 +109,6 @@ async def info_command(_: Client, message: Message):
     await message.reply(bot_info)
 
 
-
-
 @app.on_message(filters.command("alive"))
 async def alive_command(_: Client, message: Message):
     owner_username = "SexyNano"  # Replace with the bot owner's username
@@ -118,20 +116,21 @@ async def alive_command(_: Client, message: Message):
     pyrogram_version = pyrogram.__version__
 
     bot_info = (
-        f"<b>🤖 Bot Info</b>\n"
-        f"<b>Owner:</b> <a href='https://t.me/{owner_username}'>{owner_username}</a>\n"
-        f"<b>Python Version:</b> {python_version}\n"
-        f"<b>Pyrogram Version:</b> {pyrogram_version}\n"
-        f"<b>Running on:</b> {platform.system()} {platform.release()}\n"
-        f"<b>Uptime:</b> {get_uptime()}"
+        f"🤖 **Bot Info**\n"
+        f"**Owner:** [{owner_username}](https://t.me/{owner_username})\n"
+        f"**Python Version:** {python_version}\n"
+        f"**Pyrogram Version:** {pyrogram_version}\n"
+        f"**Running on:** {platform.system()} {platform.release()}\n"
+        f"**Uptime:** {get_uptime()}"
     )
 
-    await message.reply_text(bot_info, parse_mode="html")
+    await message.reply_text(bot_info, parse_mode="markdown")
 
 def get_uptime():
     uptime_seconds = int(time.time() - start_time)
     uptime_string = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
     return uptime_string
+
 
 print("Bot deployed successfully!")  # Add a log message for successful deployment
 
