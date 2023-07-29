@@ -13,9 +13,9 @@ from io import BytesIO
 from pyrogram.types import Message
 
 # Replace these with your actual values
-API_ID = 19099900
-API_HASH = "2b445de78e5baf012a0793e60bd4fbf5"
-BOT_TOKEN = "6206599982:AAENkopxhCmzexPq9pZB_gFZcVpOmDXwiNU"
+API_ID = YOUR_API_ID
+API_HASH = "YOUR_API_HASH"
+BOT_TOKEN = "YOUR_BOT_TOKEN"
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -137,4 +137,4 @@ print("Bot deployed successfully! Join @BotGeniusHub for more")  # Add a log mes
 app.run()
 idle()
 
-
+# if you face any error contact me @SexyNano
