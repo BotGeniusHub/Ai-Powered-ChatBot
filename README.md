@@ -12,19 +12,18 @@ To run the chatbot locally, follow these steps:
 git clone https://github.com/your-username/ai-powered-chatbot.git
 cd ai-powered-chatbot
 ```
-Install the required dependencies:
+2. Install the required dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-Set up API credentials:
+3. Set up API credentials:
 Replace the placeholders in the code with your actual API credentials:
 ```bash
 API_ID = YOUR_API_ID
 API_HASH = "YOUR_API_HASH"
 BOT_TOKEN = "YOUR_BOT_TOKEN"
 ```
-
-Run the bot:
+4. Run the bot:
 ```bash
 python bot.py
 ```
@@ -33,7 +32,7 @@ Once the bot is up and running, you can start chatting with it by sending messag
 
 ## Commands
 The bot supports the following commands:
-```
+```bash
 start: Start the bot and receive a welcome message.
 chat: Chat with the bot. Type /chat followed by your message to initiate the conversation.
 ping: Get the bot's response time (ping) and current uptime.
