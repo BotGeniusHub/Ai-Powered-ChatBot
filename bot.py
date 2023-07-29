@@ -1,3 +1,6 @@
+# Credits : @SexyNano 🥲 I don't need credits thanks
+
+
 import os
 import httpx
 import time
@@ -7,15 +10,12 @@ import pyrogram
 import sys
 from pyrogram import filters, Client, idle
 from io import BytesIO
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message
 
 # Replace these with your actual values
 API_ID = 19099900
 API_HASH = "2b445de78e5baf012a0793e60bd4fbf5"
 BOT_TOKEN = "6206599982:AAENkopxhCmzexPq9pZB_gFZcVpOmDXwiNU"
-# List of admin users who can perform sensitive commands
-ADMIN = [6198858059]  # Replace with actual user IDs of admins
-
 
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -76,8 +76,6 @@ async def gpt(_: Client, message: Message):
             await txt.edit(f"**An error occurred: {str(e)}**")
 
 
-# ... Existing code ...
-
 # Record the bot's start time
 start_time = time.time()
 
@@ -133,10 +131,7 @@ def get_uptime():
     uptime_string = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
     return uptime_string
 
-
-
-
-print("Bot deployed successfully!")  # Add a log message for successful deployment
+print("Bot deployed successfully! Join @BotGeniusHub for more")  # Add a log message for successful deployment
 
 # Run the bot
 app.run()
